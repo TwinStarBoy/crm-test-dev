@@ -1,4 +1,4 @@
-CREATE DATABASE crm DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+use crm ; 
 
 drop table if exists CUSTOMER;
 
@@ -7,17 +7,17 @@ drop table if exists CUSTOMER;
 /*==============================================================*/
 create table CUSTOMER
 (
-   ID                   int not null auto_increment comment 'Ö÷¼ü',
-   USERNAME             varchar(50) comment 'ÓÃ»§Ãû',
-   PASSWORD             varchar(200) comment 'ÃÜÂë',
-   MOBILE               varchar(15) comment 'ÁªÏµÊÖ»úºÅ',
-   IDENTIFICATION       varchar(20) comment 'Éí·ÝÖ¤ºÅ',
-   EMAIL                varchar(50) comment 'ÓÊÏä',
-   IS_EMAIL_VERIFY      varchar(1) comment 'ÊÇ·ñÓÊÏäÑéÖ¤(0£º·ñ£¬1£ºÊÇ)',
-   IS_FROZEN            varchar(1) comment 'ÊÇ·ñ¶³½á£¨0£º·ñ£¬1£ºÊÇ£©',
-   IS_ENABLE            varchar(1) comment 'ÊÇ·ñÊ§Ð§£¨0£º·ñ£¬1£ºÊÇ£©',
-   CREATE_TIME          timestamp comment '´´½¨Ê±¼ä',
-   UPDATE_TIME          timestamp comment 'ÐÞ¸ÄÊ±¼ä',
+   ID                   int not null auto_increment comment 'ï¿½ï¿½ï¿½ï¿½',
+   USERNAME             varchar(50) comment 'ï¿½Ã»ï¿½ï¿½ï¿½',
+   PASSWORD             varchar(200) comment 'ï¿½ï¿½ï¿½ï¿½',
+   MOBILE               varchar(15) comment 'ï¿½ï¿½Ïµï¿½Ö»ï¿½ï¿½ï¿½',
+   IDENTIFICATION       varchar(20) comment 'ï¿½ï¿½ï¿½Ö¤ï¿½ï¿½',
+   EMAIL                varchar(50) comment 'ï¿½ï¿½ï¿½ï¿½',
+   IS_EMAIL_VERIFY      varchar(1) comment 'ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¤(0ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½)',
+   IS_FROZEN            varchar(1) comment 'ï¿½Ç·ñ¶³½á£¨0ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½Ç£ï¿½',
+   IS_ENABLE            varchar(1) comment 'ï¿½Ç·ï¿½Ê§Ð§ï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½Ç£ï¿½',
+   CREATE_TIME          timestamp comment 'ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½',
+   UPDATE_TIME          timestamp comment 'ï¿½Þ¸ï¿½Ê±ï¿½ï¿½',
    primary key (ID)
 );
 
