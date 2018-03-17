@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+       <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+       
+       <script src="jquery/jquery-3.1.1.js" type="text/javascript"></script>
+       <script src="jquery/jquery-3.1.1.min.js" type="text/javascript"></script>
+       <script src="js/common.js" type="text/javascript"></script>
+       <script src="js/modifyPersonalInformation.js" type="text/javascript"></script>
+       
+       <script type="text/javascript">
+	       window.onload=function(){  
+	    	   scanPersonalInformation();
+	       } 
+       </script>
+  </head>
+  <body>
+   <form action="/crm-test/customerEdit/modifyPersonalInformation" method="post" id="modify_form">
+          <table>
+             <tr>
+                 <td><input name="id" id="id" readonly="readonly" hidden="hidden"/></td>
+              <tr>
+              <tr>
+                 <td>username:</td>
+                 <td><input name="username" id="username" readonly="readonly"/></td>
+              <tr>
+              <tr>
+                 <td>password:</td>
+                 <td><input name="password" id="password" type="password"/></td>
+              <tr>
+              <tr>
+                 <td>mobile:</td>
+                 <td><input name="mobile" id="mobile" type="text"/></td>
+              <tr>
+              <tr>
+                 <td>identification:</td>
+                 <td><input name="identification" id="identification" type="text"/></td>
+              <tr>
+              <tr>
+                 <td><input type="button" value="submit" onclick="modifyPersonalInformation()"/></td>
+              <tr>
+          </table>
+      </form>
+  </body>
+</html>

@@ -18,8 +18,36 @@
 	</select>
 
 
-	<select id="selectCustomerByUserName" resultType="com.crm.test.model.Customer">
+	<select id="selectCustomerByUserNameAndPassword" resultType="com.crm.test.model.Customer">
 		SELECT
+			a.id "id",
+			a.username "username",
+			a.email "email"
+		FROM crm.customer a
+		WHERE a.username = #{username} and a.password = #{password}
+	</select>
+	
+	<insert id="insertCustomer">
+	INSERT INTO customer 
+	(username, password, mobile, identification, email, is_email_verify, is_frozen, is_enable) 
+	VALUES 
+	(#{username}, #{password}, #{mobile}, #{identification}, #{email}, '0', '0', '1')
+	</insert>
+	
+	<select id="countUsername" resultType="java.lang.Integer">
+	select count(*) from crm.customer a where a.username = #{username}
+	</select>
+	
+	<update id="updateCustomerEmailVerify">
+	update crm.customer set is_email_verify = '1' where email = #{email}
+	</update>
+	
+	<select id="countEmail" resultType="java.lang.Integer">
+	select count(*) from crm.customer a where a.email = #{email}
+	</select>
+	
+	<select id="scanPersonalInformation" resultType="com.crm.test.model.Customer">
+	SELECT
 			a.id "id",
 			a.username "username",
 			a.password "password",
@@ -31,13 +59,30 @@
 			a.is_enable "isEnable",
 			a.create_time "createTime"
 		FROM crm.customer a
-		WHERE a.username = #{username} and a.password = #{password}
+		WHERE a.username = #{username}
 	</select>
 	
-	<insert id="insertCustomer">
-	INSERT INTO customer 
-	(username, password, mobile, identification, email, is_email_verify, is_frozen, is_enable) 
-	VALUES 
-	(#{username}, #{password}, #{mobile}, #{identification}, #{email}, '0', '0', '1')
-	</insert>
+	<update id="updatePersonalInformation">
+	update crm.customer 
+	<trim prefix="set" suffixOverrides=",">
+		 <if test="password != null">  
+	        password = #{password},  
+	     </if>  
+	     <if test="mobile != null">  
+	        mobile = #{mobile},  
+	     </if>  
+	     <if test="identification != null">  
+	        identification = #{identification},  
+	     </if> 
+	</trim>
+	where id = #{id}   
+	</update>
+	
+	<update id="updatePasswordByEmail">
+	update crm.customer set password = #{newPassword} where email = #{email}
+	</update>
+	
+	<select id="selectUsernameByEmail" resultType="com.crm.test.modelVo.CustomerResp">
+	select username from crm.customer where email = #{email}
+	</select>
 </mapper>
