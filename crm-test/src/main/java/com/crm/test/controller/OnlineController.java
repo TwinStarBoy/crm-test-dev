@@ -72,15 +72,66 @@ public class OnlineController {
 			throw new Exception("insert failed ");
 		}
 		
-		String emailVerifyCode = "123456";
+//		String emailVerifyCode = "123456";
+//		
+//		String message = "welcome register , your verify code is "+ emailVerifyCode +" , please complete register in 5 minutes , thank you !";
 		
-		String message = "welcome register , your verify code is "+ emailVerifyCode +" , please complete register in 5 minutes , thank you !";
+		String random = Math.random() + "";
+		
+		String message = "http://localhost:8880/crm-test/webpage/emailVerifyAutoLogin.html?username="+customerReq.getUsername()+"&token="+random;//It will be modified in the future
+		
 		
 		emailUtil.sendTemplateMail(customerReq.getEmail(), message);
 		
-		request.getSession().setAttribute(customerReq.getUsername(), emailVerifyCode);//it will be setted in redis in the future 
+		String key = customerReq.getUsername() + Constant.FORGET_PASSWORD_KEY_SUFFIX;
 		
-		request.getSession().setAttribute(customerReq.getEmail(), emailVerifyCode);//it will be setted in redis in the future
+		request.getSession().setAttribute(key, random);//it will be setted in redis in the future 
+		
+//		request.getSession().setAttribute(customerReq.getUsername(), emailVerifyCode);//it will be setted in redis in the future 
+//		
+//		request.getSession().setAttribute(customerReq.getEmail(), emailVerifyCode);//it will be setted in redis in the future
+	}
+	
+	@RequestMapping(value = "/emailAutoLogin" ,method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseObject emailAutoLogin(CustomerReq customerReq,HttpServletRequest request){
+		String username = customerReq.getUsername();
+		String token = customerReq.getToken();
+		
+		String key = customerReq.getUsername() + Constant.EMAIL_LOGIN_KEY_SUFFIX;
+		
+		String tokenCache = (String) request.getSession().getAttribute(key);
+		
+		if(StringUtil.isNull(token)){
+			return ResponseUtil.setResult(ReturnObject.EMAILTOKENISNULL.getReturnCode(), ReturnObject.EMAILTOKENISNULL.getReturnDesc());
+		}
+		
+		//parameter token compares to cache token 
+		if(!token.equals(tokenCache)){
+			return ResponseUtil.setResult(ReturnObject.EMAILTOKENWRONG.getReturnCode(), ReturnObject.EMAILTOKENWRONG.getReturnDesc());
+		}
+		
+		//login successfully 
+		List<CustomerResp> customerResps = null;
+		
+		try {
+			customerResps = customerService.selectCustomerByUserName(customerReq.getUsername());
+			
+			String email = customerResps.get(0).getEmail();
+			
+			customerService.updateCustomerEmailVerify(email);
+			
+			request.getSession().removeAttribute(key);// in case that repeat login
+
+			request.getSession().setAttribute("username", username);
+			
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return ResponseUtil.setResult(Constant.BACKGROUND_SERVER_WRONG_CODE, Constant.BACKGROUND_SERVER_WRONG_DESC);
+		}
+		
+		return ResponseUtil.setResult(Constant.LOGIN_SUCCESS_CODE, Constant.LOGIN_SUCCESS_DESC,customerResps,customerResps.size());
+		
 	}
 	
 	@RequestMapping(value = "/checkUsernameUnique" ,method = RequestMethod.POST)
@@ -92,7 +143,13 @@ public class OnlineController {
 			return ResponseUtil.setResult(ReturnObject.USERNAME_IS_NULL.getReturnCode(), ReturnObject.USERNAME_IS_NULL.getReturnDesc());
 		}
 		
-		int count = customerService.countUsername(customerReq);
+		int count = 0;
+		try {
+			count = customerService.countUsername(customerReq);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return ResponseUtil.setResult(ReturnObject.GENERAL_FAILED.getReturnCode(), ReturnObject.GENERAL_FAILED.getReturnDesc());
+		}
 		
 		if(count > 0){
 			return ResponseUtil.setResult(ReturnObject.USERNAME_IS_ALREADY_EXIST.getReturnCode(), ReturnObject.USERNAME_IS_ALREADY_EXIST.getReturnDesc());
@@ -110,7 +167,13 @@ public class OnlineController {
 			return ResponseUtil.setResult(ReturnObject.EMAIL_IS_NULL.getReturnCode(), ReturnObject.EMAIL_IS_NULL.getReturnDesc());
 		}
 		
-		int count = customerService.countEmail(customerReq);
+		int count = 0;
+		try {
+			count = customerService.countEmail(customerReq);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return ResponseUtil.setResult(ReturnObject.GENERAL_FAILED.getReturnCode(), ReturnObject.GENERAL_FAILED.getReturnDesc());
+		}
 		
 		if(count > 0){
 			return ResponseUtil.setResult(ReturnObject.EMAIL_IS_ALREADY_EXIST.getReturnCode(), ReturnObject.EMAIL_IS_ALREADY_EXIST.getReturnDesc());
@@ -160,7 +223,15 @@ public class OnlineController {
 		String username = customer.getUsername();
 		String password = customer.getPassword();
 		System.out.print(username);
-		List<Customer> customers = customerService.selectCustomerByUserNameAndPassword(username,password);
+		List<Customer> customers = null;
+		
+		try {
+			customers = customerService.selectCustomerByUserNameAndPassword(
+					username, password);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return ResponseUtil.setResult(ReturnObject.GENERAL_FAILED.getReturnCode(), ReturnObject.GENERAL_FAILED.getReturnDesc());
+		}
 		if(null == customers || customers.size() == 0){
 			return ResponseUtil.setResult(Constant.LOGIN_FAILED_CODE, Constant.LOGIN_FAILED_DESC);
 		}
@@ -186,12 +257,25 @@ public class OnlineController {
 	
 	@RequestMapping(value = "/forgetPassword" ,method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseObject forgetPassword(HttpServletRequest request){
+	public ResponseObject forgetPassword(HttpServletRequest request,CustomerReq customerReq){
 		HttpSession session = request.getSession();
 		
 		System.out.println(session.getAttribute("username"));
 		
 		String email = request.getParameter("email");
+		
+		int count = 0;
+		
+		try {
+			count = customerService.countEmail(customerReq);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return ResponseUtil.setResult(ReturnObject.GENERAL_FAILED.getReturnCode(), ReturnObject.GENERAL_FAILED.getReturnDesc());
+		}
+		
+		if(count == 0){
+			
+		}
 		
 		String random = Math.random() + "";
 		

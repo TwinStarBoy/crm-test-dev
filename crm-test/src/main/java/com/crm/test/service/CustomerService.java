@@ -28,6 +28,14 @@ public class CustomerService {
 //		return null;
 	}
 	
+	public List<CustomerResp> selectCustomerByUserName(String username){
+		List<CustomerResp> customerResps = customerMapper.selectCustomerByUserName(username);
+		if(customerResps == null || customerResps.size() == 0){
+			return new ArrayList<CustomerResp>();
+		}
+		return customerResps;
+	}
+	
 	public int insertCustomer(Customer customer){
 		int row = customerMapper.insertCustomer(customer);
 		return row;

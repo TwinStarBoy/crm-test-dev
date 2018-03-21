@@ -46,7 +46,6 @@ function checkEmailUnique(){
 	});
 }
 
-
 function register(){
 	var username = $("#username").val();
 	var password = $("#password").val();

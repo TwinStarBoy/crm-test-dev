@@ -13,6 +13,8 @@ public interface CustomerMapper {
 	
 	public List<Customer> selectCustomerByUserNameAndPassword(@Param(value = "username") String username,@Param(value = "password") String password);
 	
+	public List<CustomerResp> selectCustomerByUserName(@Param(value = "username") String username);
+	
 	public int insertCustomer(Customer customer);
 	
 	public int countUsername(CustomerReq customerReq);

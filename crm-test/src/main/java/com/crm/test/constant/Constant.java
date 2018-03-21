@@ -56,4 +56,6 @@ public class Constant {
 	public static final String BACKGROUND_SERVER_WRONG_DESC = "server occur wrong , please link administor";
 	
 	public static final String FORGET_PASSWORD_KEY_SUFFIX = "_token";
+	
+	public static final String EMAIL_LOGIN_KEY_SUFFIX = "_token";
 }

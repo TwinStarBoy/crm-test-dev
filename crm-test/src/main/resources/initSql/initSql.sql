@@ -1,11 +1,11 @@
 use crm ; 
 
-drop table if exists CUSTOMER;
+drop table if exists customer;
 
 /*==============================================================*/
 /* Table: CUSTOMER                                              */
 /*==============================================================*/
-create table CUSTOMER
+create table customer
 (
    ID                   int not null auto_increment comment '主键',
    USERNAME             varchar(50) not null comment '用户名',

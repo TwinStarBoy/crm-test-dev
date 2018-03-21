@@ -1,6 +1,4 @@
 
-
-
 function scanPersonalInformation(){
 	var username = getParam("username");
 	

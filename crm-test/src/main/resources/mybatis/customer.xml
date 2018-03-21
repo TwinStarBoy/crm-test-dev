@@ -27,6 +27,15 @@
 		WHERE a.username = #{username} and a.password = #{password}
 	</select>
 	
+	<select id="selectCustomerByUserName" resultType="com.crm.test.modelVo.CustomerResp">
+		SELECT
+			a.id "id",
+			a.username "username",
+			a.email "email"
+		FROM crm.customer a
+		WHERE a.username = #{username}
+	</select>
+	
 	<insert id="insertCustomer">
 	INSERT INTO customer 
 	(username, password, mobile, identification, email, is_email_verify, is_frozen, is_enable) 

@@ -3,6 +3,7 @@ package com.crm.test.constant;
 public enum ReturnObject {
 
 	GENERAL_SUCCESS("00000","successfully"),
+	GENERAL_FAILED("99999","system occurs mistakes , please connects administrator"),
 	EMAIL_IS_NULL("00005","email could not be null"),
 	EMAILTOKENISNULL("00006","email token could not be null"),
 	EMAILTOKENWRONG("00007","email token is wrong , please check it"),
