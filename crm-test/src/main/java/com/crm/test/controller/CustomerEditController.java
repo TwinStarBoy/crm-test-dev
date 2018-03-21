@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.crm.test.constant.Constant;
+import com.crm.test.constant.ReturnObject;
 import com.crm.test.model.Customer;
+import com.crm.test.modelVo.CustomerReq;
 import com.crm.test.service.CustomerService;
 import com.crm.test.util.ResponseObject;
 import com.crm.test.util.ResponseUtil;
@@ -24,9 +26,19 @@ public class CustomerEditController {
 	
 	@RequestMapping(value = "/modifyPersonalInformation" ,method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseObject modifyPersonalInformation(Customer customer){
+	public ResponseObject modifyPersonalInformation(CustomerReq customerReq){
+		String password = customerReq.getPassword();
+		if(password == null || "".equals(password)){
+			return ResponseUtil.setResult(ReturnObject.PASSWORD_COULD_NOT_BE_NULL.getReturnCode(),ReturnObject.PASSWORD_COULD_NOT_BE_NULL.getReturnDesc());
+		}
+		
+		String confirmPassword = customerReq.getConfirmPassword();
+		if(!password.equals(confirmPassword)){
+			return ResponseUtil.setResult(ReturnObject.PASSWORD_NOT_EQUALS_CONFIRM.getReturnCode(),ReturnObject.PASSWORD_NOT_EQUALS_CONFIRM.getReturnDesc());
+		}
+		
 		try {
-			customerService.updatePersonalInformation(customer);
+			customerService.updatePersonalInformation(customerReq);
 		} catch (Exception e) {
 			return ResponseUtil.setResult(Constant.BACKGROUND_SERVER_WRONG_CODE, Constant.BACKGROUND_SERVER_WRONG_DESC );
 		}

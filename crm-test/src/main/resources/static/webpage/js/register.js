@@ -59,7 +59,7 @@ function register(){
 		success:function(data){
 			console.log(data);
 			if(data.returnCode == "0000"){
-				window.location.href = "/crm-test/webpage/emailVerify.html?email=" + email;
+				window.location.href = "/crm-test/webpage/login.html";
 			}else{
 				alert(data.returnDesc);
 			}

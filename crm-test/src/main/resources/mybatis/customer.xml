@@ -31,6 +31,7 @@
 		SELECT
 			a.id "id",
 			a.username "username",
+			a.is_email_verify "isEmailVerify",
 			a.email "email"
 		FROM crm.customer a
 		WHERE a.username = #{username}

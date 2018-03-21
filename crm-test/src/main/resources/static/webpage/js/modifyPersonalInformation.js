@@ -26,12 +26,20 @@ function modifyPersonalInformation(){
 	var id = $("#id").val();
 	var username = $("#username").val();
 	var password = $("#password").val();
+	var confirmPassword = $("#confirmPassword").val();
 	var mobile = $("#mobile").val();
 	var identification = $("#identification").val();
 	
 	$.ajax({
 		url:"/crm-test/customerEdit/modifyPersonalInformation",
-		data:{username:username,password:password,mobile:mobile,identification:identification,id:id},
+		data:{
+			username:username,
+			password:password,
+			confirmPassword:confirmPassword,
+			mobile:mobile,
+			identification:identification,
+			id:id
+		},
 		type: 'POST',
 		success:function(data){
 			console.log(data);

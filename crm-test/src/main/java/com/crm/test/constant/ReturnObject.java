@@ -14,7 +14,11 @@ public enum ReturnObject {
 	NEWPASSWORD_NOT_EQUALS_CONFIRMPASSWORD("00011","new password doesn't equal confirm password"),
 	USERNAME_IS_NULL("00012","username could not be null"),
 	USERNAME_IS_ALREADY_EXIST("00013","username is already exist"),
-	EMAIL_IS_ALREADY_EXIST("00014","email is already exist");
+	EMAIL_IS_ALREADY_EXIST("00014","email is already exist"),
+	EMAIL_SEND_SUCCESS("00000","email send successfully"),
+	PASSWORD_COULD_NOT_BE_NULL("00015","password could not be empty"),
+	PASSWORD_NOT_EQUALS_CONFIRM("00016","password doesn't equal confirm password"),
+	EMAIL_NOT_EXIST("00017","email does not exist");
 
 	private String returnCode;
 	private String returnDesc;

@@ -31,7 +31,10 @@ public class CustomerService {
 	public List<CustomerResp> selectCustomerByUserName(String username){
 		List<CustomerResp> customerResps = customerMapper.selectCustomerByUserName(username);
 		if(customerResps == null || customerResps.size() == 0){
-			return new ArrayList<CustomerResp>();
+			CustomerResp customerResp = new CustomerResp();
+			customerResps = new ArrayList<CustomerResp>();
+			customerResps.add(customerResp);
+			return customerResps;
 		}
 		return customerResps;
 	}
@@ -63,9 +66,9 @@ public class CustomerService {
 		return customers;
 	}
 	
-	public int updatePersonalInformation(Customer customer){
+	public int updatePersonalInformation(CustomerReq customerReq){
 		
-		return customerMapper.updatePersonalInformation(customer);
+		return customerMapper.updatePersonalInformation(customerReq);
 		
 	}
 	

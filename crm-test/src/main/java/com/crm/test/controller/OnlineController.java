@@ -76,6 +76,15 @@ public class OnlineController {
 //		
 //		String message = "welcome register , your verify code is "+ emailVerifyCode +" , please complete register in 5 minutes , thank you !";
 		
+		sendVerifyEmail(customerReq, request);
+		
+//		request.getSession().setAttribute(customerReq.getUsername(), emailVerifyCode);//it will be setted in redis in the future 
+//		
+//		request.getSession().setAttribute(customerReq.getEmail(), emailVerifyCode);//it will be setted in redis in the future
+	}
+
+	private void sendVerifyEmail(CustomerReq customerReq,
+			HttpServletRequest request) throws Exception {
 		String random = Math.random() + "";
 		
 		String message = "http://localhost:8880/crm-test/webpage/emailVerifyAutoLogin.html?username="+customerReq.getUsername()+"&token="+random;//It will be modified in the future
@@ -86,10 +95,6 @@ public class OnlineController {
 		String key = customerReq.getUsername() + Constant.FORGET_PASSWORD_KEY_SUFFIX;
 		
 		request.getSession().setAttribute(key, random);//it will be setted in redis in the future 
-		
-//		request.getSession().setAttribute(customerReq.getUsername(), emailVerifyCode);//it will be setted in redis in the future 
-//		
-//		request.getSession().setAttribute(customerReq.getEmail(), emailVerifyCode);//it will be setted in redis in the future
 	}
 	
 	@RequestMapping(value = "/emailAutoLogin" ,method = RequestMethod.POST)
@@ -132,6 +137,45 @@ public class OnlineController {
 		
 		return ResponseUtil.setResult(Constant.LOGIN_SUCCESS_CODE, Constant.LOGIN_SUCCESS_DESC,customerResps,customerResps.size());
 		
+	}
+	
+	@RequestMapping(value = "/sendVerifyEmailReq" ,method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseObject sendVerifyEmailReq(CustomerReq customerReq , HttpServletRequest request){
+        
+		try {
+			CustomerResp customerResp = customerService.selectCustomerByUserName(customerReq.getUsername()).get(0);
+			customerReq.setEmail(customerResp.getEmail());
+			sendVerifyEmail(customerReq, request);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseUtil.setResult(Constant.BACKGROUND_SERVER_WRONG_CODE, Constant.BACKGROUND_SERVER_WRONG_DESC);
+		}
+		
+		return ResponseUtil.setResult(ReturnObject.EMAIL_SEND_SUCCESS.getReturnCode(), ReturnObject.EMAIL_SEND_SUCCESS.getReturnDesc());
+	}
+	
+	@RequestMapping(value = "/isVerifyEmail" ,method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseObject isVerifyEmail(CustomerReq customerReq){
+        
+		String username = customerReq.getUsername();
+		
+		if(StringUtil.isNull(username)){
+			return ResponseUtil.setResult(ReturnObject.USERNAME_IS_NULL.getReturnCode(), ReturnObject.USERNAME_IS_NULL.getReturnDesc());
+		}
+		
+		List<CustomerResp> customerResps;
+		try {
+			customerResps = customerService.selectCustomerByUserName(username);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return ResponseUtil.setResult(ReturnObject.GENERAL_FAILED.getReturnCode(), ReturnObject.GENERAL_FAILED.getReturnDesc());
+		}
+		
+		return ResponseUtil.setResult(ReturnObject.GENERAL_SUCCESS.getReturnCode(), ReturnObject.GENERAL_SUCCESS.getReturnDesc() , customerResps ,customerResps.size());
 	}
 	
 	@RequestMapping(value = "/checkUsernameUnique" ,method = RequestMethod.POST)
@@ -274,12 +318,14 @@ public class OnlineController {
 		}
 		
 		if(count == 0){
-			
+			return ResponseUtil.setResult(ReturnObject.EMAIL_NOT_EXIST.getReturnCode(), ReturnObject.EMAIL_NOT_EXIST.getReturnDesc());
 		}
 		
 		String random = Math.random() + "";
 		
 		String message = "http://localhost:8880/crm-test/webpage/resetPassword.html?email="+email+"&token="+random;//It will be modified in the future
+		
+		message = "<a href=" + message +">" + message +"</a>";
 		
 		try {
 			

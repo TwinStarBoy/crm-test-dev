@@ -25,7 +25,7 @@ public interface CustomerMapper {
 	
 	public List<Customer> scanPersonalInformation(@Param(value = "username") String username);
 	
-	public int updatePersonalInformation(Customer customer);
+	public int updatePersonalInformation(CustomerReq customerReq);
 	
 	public int updatePasswordByEmail(Customer customer);
 	
