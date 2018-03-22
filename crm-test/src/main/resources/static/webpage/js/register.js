@@ -49,16 +49,25 @@ function checkEmailUnique(){
 function register(){
 	var username = $("#username").val();
 	var password = $("#password").val();
+	var confirmPassword = $("#confirmPassword").val();
 	var mobile = $("#mobile").val();
 	var identification = $("#identification").val();
 	var email = $("#email").val();
 	$.ajax({
 		url:"/crm-test/onlineManage/register",
-		data:{username:username,password:password,mobile:mobile,identification:identification,email:email},
+		data:{
+			username:username,
+			password:password,
+			confirmPassword:confirmPassword,
+			mobile:mobile,
+			identification:identification,
+			email:email
+		},
 		type: 'POST',
 		success:function(data){
 			console.log(data);
 			if(data.returnCode == "0000"){
+				alert("send email successfully , please check email and complete registeration");
 				window.location.href = "/crm-test/webpage/login.html";
 			}else{
 				alert(data.returnDesc);

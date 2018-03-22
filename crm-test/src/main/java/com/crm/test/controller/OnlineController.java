@@ -43,6 +43,22 @@ public class OnlineController {
 		
 		System.out.println(customerReq.getUsername());
 		
+        String password = customerReq.getPassword();
+		
+		if(StringUtil.isNull(password)){
+			return ResponseUtil.setResult(ReturnObject.PASSWORD_COULD_NOT_BE_NULL.getReturnCode(), ReturnObject.PASSWORD_COULD_NOT_BE_NULL.getReturnDesc());
+		}
+		
+		String confirmPassword = customerReq.getConfirmPassword();
+		
+		if(StringUtil.isNull(confirmPassword)){
+			return ResponseUtil.setResult(ReturnObject.CONFIRMPASSWORDISNULL.getReturnCode(), ReturnObject.CONFIRMPASSWORDISNULL.getReturnDesc());
+		}
+		
+		if(!password.equals(confirmPassword)){
+			return ResponseUtil.setResult(ReturnObject.NEWPASSWORD_NOT_EQUALS_CONFIRMPASSWORD.getReturnCode(), ReturnObject.NEWPASSWORD_NOT_EQUALS_CONFIRMPASSWORD.getReturnDesc());
+		}
+		
 		int countUsername = customerService.countUsername(customerReq);
 		
 		if(countUsername > 0){
@@ -56,46 +72,16 @@ public class OnlineController {
 		}
 		
 		try {
-			createCustomer(customerReq,request);
+			customerService.createCustomer(customerReq,request);
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			return ResponseUtil.setResult(Constant.BACKGROUND_SERVER_WRONG_CODE, Constant.BACKGROUND_SERVER_WRONG_DESC);
 		}
 		
 		return ResponseUtil.setResult(Constant.REGISTER_SUCCESS_CODE, Constant.REGISTER_SUCCESS_DESC);
 	}
 
-	@Transactional
-	private void createCustomer(CustomerReq customerReq,HttpServletRequest request) throws Exception {
-		int rowns = customerService.insertCustomer(customerReq);
-		
-		if(1 != rowns){
-			throw new Exception("insert failed ");
-		}
-		
-//		String emailVerifyCode = "123456";
-//		
-//		String message = "welcome register , your verify code is "+ emailVerifyCode +" , please complete register in 5 minutes , thank you !";
-		
-		sendVerifyEmail(customerReq, request);
-		
-//		request.getSession().setAttribute(customerReq.getUsername(), emailVerifyCode);//it will be setted in redis in the future 
-//		
-//		request.getSession().setAttribute(customerReq.getEmail(), emailVerifyCode);//it will be setted in redis in the future
-	}
-
-	private void sendVerifyEmail(CustomerReq customerReq,
-			HttpServletRequest request) throws Exception {
-		String random = Math.random() + "";
-		
-		String message = "http://localhost:8880/crm-test/webpage/emailVerifyAutoLogin.html?username="+customerReq.getUsername()+"&token="+random;//It will be modified in the future
-		
-		
-		emailUtil.sendTemplateMail(customerReq.getEmail(), message);
-		
-		String key = customerReq.getUsername() + Constant.FORGET_PASSWORD_KEY_SUFFIX;
-		
-		request.getSession().setAttribute(key, random);//it will be setted in redis in the future 
-	}
+	
 	
 	@RequestMapping(value = "/emailAutoLogin" ,method = RequestMethod.POST)
 	@ResponseBody
@@ -146,7 +132,7 @@ public class OnlineController {
 		try {
 			CustomerResp customerResp = customerService.selectCustomerByUserName(customerReq.getUsername()).get(0);
 			customerReq.setEmail(customerResp.getEmail());
-			sendVerifyEmail(customerReq, request);
+			customerService.sendVerifyEmail(customerReq, request);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -192,6 +178,7 @@ public class OnlineController {
 			count = customerService.countUsername(customerReq);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
+			logger.error(e);
 			return ResponseUtil.setResult(ReturnObject.GENERAL_FAILED.getReturnCode(), ReturnObject.GENERAL_FAILED.getReturnDesc());
 		}
 		
@@ -273,7 +260,7 @@ public class OnlineController {
 			customers = customerService.selectCustomerByUserNameAndPassword(
 					username, password);
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(),e);
 			return ResponseUtil.setResult(ReturnObject.GENERAL_FAILED.getReturnCode(), ReturnObject.GENERAL_FAILED.getReturnDesc());
 		}
 		if(null == customers || customers.size() == 0){
@@ -398,6 +385,49 @@ public class OnlineController {
 			logger.error(e.getMessage());
 			return ResponseUtil.setResult(ReturnObject.MODIFYPASSWORDFAILED.getReturnCode(), ReturnObject.MODIFYPASSWORDFAILED.getReturnDesc());
 		}
+		return ResponseUtil.setResult(ReturnObject.MODIFYPASSWORDSUCCESS.getReturnCode(), ReturnObject.MODIFYPASSWORDSUCCESS.getReturnDesc(),customerResps,customerResps.size());
+	}
+	
+	@RequestMapping(value = "/resetPasswordAfterLogin" ,method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseObject resetPasswordAfterLogin(HttpServletRequest request,CustomerReq customerReq){
+		//check username 
+		String username = customerReq.getUsername();
+		
+		if(StringUtil.isNull(username)){
+			return ResponseUtil.setResult(ReturnObject.USERNAME_COULD_NOT_BE_EMPTY.getReturnCode(), ReturnObject.USERNAME_COULD_NOT_BE_EMPTY.getReturnDesc());
+		}
+		
+		String newPassword = customerReq.getNewPassword();
+		
+		if(StringUtil.isNull(newPassword)){
+			return ResponseUtil.setResult(ReturnObject.NEWPASSWORDISNULL.getReturnCode(), ReturnObject.NEWPASSWORDISNULL.getReturnDesc());
+		}
+		
+		String confirmPassword = customerReq.getConfirmPassword();
+		
+		if(StringUtil.isNull(confirmPassword)){
+			return ResponseUtil.setResult(ReturnObject.CONFIRMPASSWORDISNULL.getReturnCode(), ReturnObject.CONFIRMPASSWORDISNULL.getReturnDesc());
+		}
+		
+		if(!newPassword.equals(confirmPassword)){
+			return ResponseUtil.setResult(ReturnObject.NEWPASSWORD_NOT_EQUALS_CONFIRMPASSWORD.getReturnCode(), ReturnObject.NEWPASSWORD_NOT_EQUALS_CONFIRMPASSWORD.getReturnDesc());
+		}
+		
+		List<CustomerResp> customerResps = new ArrayList<CustomerResp>();
+		
+		int row = 0 ;
+		try {
+			row = customerService.updatePasswordByUsername(customerReq);
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			return ResponseUtil.setResult(ReturnObject.MODIFYPASSWORDFAILED.getReturnCode(), ReturnObject.MODIFYPASSWORDFAILED.getReturnDesc());
+		}
+		
+		if(row == 0){
+			return ResponseUtil.setResult(ReturnObject.USERNAME_DOES_NOT_EXIST.getReturnCode(), ReturnObject.USERNAME_DOES_NOT_EXIST.getReturnDesc());
+		}
+		
 		return ResponseUtil.setResult(ReturnObject.MODIFYPASSWORDSUCCESS.getReturnCode(), ReturnObject.MODIFYPASSWORDSUCCESS.getReturnDesc(),customerResps,customerResps.size());
 	}
 	

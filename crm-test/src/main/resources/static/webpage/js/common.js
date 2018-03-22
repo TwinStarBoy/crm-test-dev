@@ -6,3 +6,7 @@ function getParam(paramName) {
     } 
     return paramValue == "" && (paramValue = null), paramValue 
 }
+
+function goBack(){
+	window.location.href = document.referrer;//返回上一页并刷新  
+}

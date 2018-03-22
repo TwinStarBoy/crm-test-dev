@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.client.RestTemplate;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
@@ -26,12 +29,11 @@ import com.alibaba.druid.pool.DruidDataSource;
 @EnableAutoConfiguration
 @SpringBootApplication
 @ComponentScan
+@EnableTransactionManagement 
 @MapperScan("com.crm.test.mapper")  //后期加上
 @ImportResource("/spring/applicationContext.xml")
 public class Application {
 	private static Logger logger = Logger.getLogger(Application.class);
-
-
 
 	@Bean
 	public SqlSessionFactory sqlSessionFactoryBean() throws Exception {

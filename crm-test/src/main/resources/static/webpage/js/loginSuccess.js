@@ -17,6 +17,10 @@ function modify(){
 	window.location.href = "/crm-test/webpage/modifyPersonalInformation.html?username="+getParam("username");
 }
 
+function resetPasswordAfterLogin(){
+	window.location.href = "/crm-test/webpage/resetPasswordAfterLogin.html?username="+getParam("username");
+}
+
 function isEmailVerify(){
 	
 	var username = getParam("username");

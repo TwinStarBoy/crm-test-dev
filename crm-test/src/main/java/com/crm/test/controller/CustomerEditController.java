@@ -27,7 +27,7 @@ public class CustomerEditController {
 	@RequestMapping(value = "/modifyPersonalInformation" ,method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseObject modifyPersonalInformation(CustomerReq customerReq){
-		String password = customerReq.getPassword();
+		/*String password = customerReq.getPassword();
 		if(password == null || "".equals(password)){
 			return ResponseUtil.setResult(ReturnObject.PASSWORD_COULD_NOT_BE_NULL.getReturnCode(),ReturnObject.PASSWORD_COULD_NOT_BE_NULL.getReturnDesc());
 		}
@@ -35,7 +35,7 @@ public class CustomerEditController {
 		String confirmPassword = customerReq.getConfirmPassword();
 		if(!password.equals(confirmPassword)){
 			return ResponseUtil.setResult(ReturnObject.PASSWORD_NOT_EQUALS_CONFIRM.getReturnCode(),ReturnObject.PASSWORD_NOT_EQUALS_CONFIRM.getReturnDesc());
-		}
+		}*/
 		
 		try {
 			customerService.updatePersonalInformation(customerReq);

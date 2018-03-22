@@ -3,19 +3,27 @@ package com.crm.test.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.crm.test.constant.Constant;
 import com.crm.test.mapper.CustomerMapper;
 import com.crm.test.model.Customer;
 import com.crm.test.modelVo.CustomerReq;
 import com.crm.test.modelVo.CustomerResp;
+import com.crm.test.util.EmailUtil;
 
 @Service
 public class CustomerService {
 	
 	@Autowired
 	private CustomerMapper customerMapper;
+	
+	@Autowired
+    private EmailUtil emailUtil;
 	
 	public List<Customer> selectCustomerByUserNameAndPassword(String username,String password){
 		
@@ -71,6 +79,10 @@ public class CustomerService {
 		return customerMapper.updatePersonalInformation(customerReq);
 		
 	}
+
+	public int updatePasswordByUsername(CustomerReq customerReq){
+		return customerMapper.updatePasswordByUsername(customerReq);
+	}
 	
 	public int updatePasswordByEmail(Customer customer){
 		return customerMapper.updatePasswordByEmail(customer);
@@ -82,5 +94,39 @@ public class CustomerService {
 			return new ArrayList<CustomerResp>();
 		}
 		return customerResps;
+	}
+	
+	@Transactional(rollbackFor={RuntimeException.class, Exception.class})
+	public void createCustomer(CustomerReq customerReq,HttpServletRequest request) throws Exception {
+		int rowns = insertCustomer(customerReq);
+		
+		if(1 != rowns){
+			throw new Exception("insert failed ");
+		}
+		
+//		String emailVerifyCode = "123456";
+//		
+//		String message = "welcome register , your verify code is "+ emailVerifyCode +" , please complete register in 5 minutes , thank you !";
+		
+		sendVerifyEmail(customerReq, request);
+		
+//		request.getSession().setAttribute(customerReq.getUsername(), emailVerifyCode);//it will be setted in redis in the future 
+//		
+//		request.getSession().setAttribute(customerReq.getEmail(), emailVerifyCode);//it will be setted in redis in the future
+	}
+
+	public void sendVerifyEmail(CustomerReq customerReq,
+			HttpServletRequest request) throws Exception {
+		
+		String random = Math.random() + "";
+		
+		String message = "http://localhost:8880/crm-test/webpage/emailVerifyAutoLogin.html?username="+customerReq.getUsername()+"&token="+random;//It will be modified in the future
+		
+		
+		emailUtil.sendTemplateMail(customerReq.getEmail(), message);
+		
+		String key = customerReq.getUsername() + Constant.FORGET_PASSWORD_KEY_SUFFIX;
+		
+		request.getSession().setAttribute(key, random);//it will be setted in redis in the future 
 	}
 }

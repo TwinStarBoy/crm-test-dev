@@ -29,5 +29,7 @@ public interface CustomerMapper {
 	
 	public int updatePasswordByEmail(Customer customer);
 	
+	public int updatePasswordByUsername(CustomerReq customerReq);
+	
 	public List<CustomerResp> selectUsernameByEmail(CustomerReq customerReq);
 }
