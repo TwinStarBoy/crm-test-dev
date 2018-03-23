@@ -20,7 +20,8 @@ public enum ReturnObject {
 	PASSWORD_NOT_EQUALS_CONFIRM("00016","password doesn't equal confirm password"),
 	EMAIL_NOT_EXIST("00017","email does not exist"),
 	USERNAME_COULD_NOT_BE_EMPTY("00018","username could not be empty"),
-	USERNAME_DOES_NOT_EXIST("00019","username doesn't exist");
+	USERNAME_DOES_NOT_EXIST("00019","username doesn't exist"),
+	MESSAGE_TYPE_WRONG("00020","message type is wrong");
 
 	private String returnCode;
 	private String returnDesc;
