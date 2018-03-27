@@ -49,7 +49,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-velocity</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-redis</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.mybatis</groupId>
@@ -148,6 +151,15 @@
 				<spring.mail.properties.mail.smtp.starttls.required>true</spring.mail.properties.mail.smtp.starttls.required>
 				<mail.buyback.accept.group>chaolm@cmbfae.com,chaolm@cmbfae.com</mail.buyback.accept.group>
 				<mail.exception.inform.group>chaolm@cmbfae.com,xiaof@cmbfae.com</mail.exception.inform.group>
+				<spring.redis.database>0</spring.redis.database>
+				<spring.redis.host>localhost</spring.redis.host>
+				<spring.redis.port>6379</spring.redis.port>
+				<spring.redis.password></spring.redis.password>
+				<spring.redis.pool.max-active>8</spring.redis.pool.max-active>
+				<spring.redis.pool.max-wait>-1</spring.redis.pool.max-wait>
+				<spring.redis.pool.max-idle>8</spring.redis.pool.max-idle>
+				<spring.redis.pool.min-idle>0</spring.redis.pool.min-idle>
+				<spring.redis.timeout>0</spring.redis.timeout>
 			</properties>
 		</profile>
 		<profile>
@@ -157,34 +169,7 @@
 				<spring.datasource.url></spring.datasource.url>
 				<spring.datasource.username></spring.datasource.username>
 				<spring.datasource.password></spring.datasource.password>
-				<spring.datasource.driver-class-name>oracle.jdbc.driver.OracleDriver</spring.datasource.driver-class-name>
-				<hangFileExportPath>/opt/faeapp/apps/upload/thedata/</hangFileExportPath>
-				<hangFileNamePrefix>asset_</hangFileNamePrefix>
-				<hangFileNameSuffix>.txt</hangFileNameSuffix>
-				<server.port>8882</server.port>
-				<server.sessionTimeout>30000</server.sessionTimeout>
-				<logging.config>classpath:logback-spring.xml</logging.config>
-				<spring.profiles.active>native</spring.profiles.active>
-				<log.home>/opt/faeapp/logs</log.home>
-				<app.name>/crm-test</app.name>
-				<spring.mail.host></spring.mail.host>
-				<spring.mail.username></spring.mail.username>
-				<spring.mail.password></spring.mail.password>
-				<spring.mail.properties.mail.smtp.auth>true</spring.mail.properties.mail.smtp.auth>
-				<spring.mail.properties.mail.smtp.starttls.enable>false</spring.mail.properties.mail.smtp.starttls.enable>
-				<spring.mail.properties.mail.smtp.starttls.required>false</spring.mail.properties.mail.smtp.starttls.required>
-				<mail.buyback.accept.group>chaolm@cmbfae.com,chaolm@cmbfae.com</mail.buyback.accept.group>
-				<mail.exception.inform.group>chaolm@cmbfae.com</mail.exception.inform.group>
-			</properties>
-		</profile>
-		<profile>
-			<id>prd</id>
-			<properties>
-				<profileActive>production</profileActive>
-				<spring.datasource.url></spring.datasource.url>
-				<spring.datasource.username></spring.datasource.username>
-				<spring.datasource.password></spring.datasource.password>
-				<spring.datasource.driver-class-name>oracle.jdbc.driver.OracleDriver</spring.datasource.driver-class-name>
+				<spring.datasource.driver-class-name>com.mysql.jdbc.Driver</spring.datasource.driver-class-name>
 				<hangFileExportPath>/opt/faeapp/apps/upload/thedata/</hangFileExportPath>
 				<hangFileNamePrefix>asset_</hangFileNamePrefix>
 				<hangFileNameSuffix>.txt</hangFileNameSuffix>
@@ -201,7 +186,52 @@
 				<spring.mail.properties.mail.smtp.starttls.enable>false</spring.mail.properties.mail.smtp.starttls.enable>
 				<spring.mail.properties.mail.smtp.starttls.required>false</spring.mail.properties.mail.smtp.starttls.required>
 				<mail.buyback.accept.group></mail.buyback.accept.group>
-				<mail.exception.inform.group>chaolm@cmbfae.com</mail.exception.inform.group>
+				<mail.exception.inform.group></mail.exception.inform.group>
+				<spring.redis.database>0</spring.redis.database>
+				<spring.redis.host>localhost</spring.redis.host>
+				<spring.redis.port>6379</spring.redis.port>
+				<spring.redis.password></spring.redis.password>
+				<spring.redis.pool.max-active>8</spring.redis.pool.max-active>
+				<spring.redis.pool.max-wait>-1</spring.redis.pool.max-wait>
+				<spring.redis.pool.max-idle>8</spring.redis.pool.max-idle>
+				<spring.redis.pool.min-idle>0</spring.redis.pool.min-idle>
+				<spring.redis.timeout>0</spring.redis.timeout>
+			</properties>
+		</profile>
+		<profile>
+			<id>prd</id>
+			<properties>
+				<profileActive>production</profileActive>
+				<spring.datasource.url></spring.datasource.url>
+				<spring.datasource.username></spring.datasource.username>
+				<spring.datasource.password></spring.datasource.password>
+				<spring.datasource.driver-class-name>com.mysql.jdbc.Driver</spring.datasource.driver-class-name>
+				<hangFileExportPath>/opt/faeapp/apps/upload/thedata/</hangFileExportPath>
+				<hangFileNamePrefix>asset_</hangFileNamePrefix>
+				<hangFileNameSuffix>.txt</hangFileNameSuffix>
+				<server.port>8882</server.port>
+				<server.sessionTimeout>30000</server.sessionTimeout>
+				<logging.config>classpath:logback-spring.xml</logging.config>
+				<spring.profiles.active>native</spring.profiles.active>
+				<log.home>/opt/faeapp/logs</log.home>
+				<app.name>/crm-test</app.name>
+				<spring.mail.host></spring.mail.host>
+				<spring.mail.username></spring.mail.username>
+				<spring.mail.password></spring.mail.password>
+				<spring.mail.properties.mail.smtp.auth>true</spring.mail.properties.mail.smtp.auth>
+				<spring.mail.properties.mail.smtp.starttls.enable>false</spring.mail.properties.mail.smtp.starttls.enable>
+				<spring.mail.properties.mail.smtp.starttls.required>false</spring.mail.properties.mail.smtp.starttls.required>
+				<mail.buyback.accept.group></mail.buyback.accept.group>
+				<mail.exception.inform.group></mail.exception.inform.group>
+				<spring.redis.database>0</spring.redis.database>
+				<spring.redis.host>localhost</spring.redis.host>
+				<spring.redis.port>6379</spring.redis.port>
+				<spring.redis.password></spring.redis.password>
+				<spring.redis.pool.max-active>8</spring.redis.pool.max-active>
+				<spring.redis.pool.max-wait>-1</spring.redis.pool.max-wait>
+				<spring.redis.pool.max-idle>8</spring.redis.pool.max-idle>
+				<spring.redis.pool.min-idle>0</spring.redis.pool.min-idle>
+				<spring.redis.timeout>0</spring.redis.timeout>
 			</properties>
 		</profile>
 	</profiles>

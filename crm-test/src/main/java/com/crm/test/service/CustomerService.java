@@ -2,10 +2,12 @@ package com.crm.test.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,9 @@ public class CustomerService {
 	
 	@Autowired
 	private CustomerMapper customerMapper;
+	
+	@Autowired
+	private StringRedisTemplate stringRedisTemplate;
 	
 	@Autowired
     private EmailUtil emailUtil;
@@ -108,7 +113,7 @@ public class CustomerService {
 //		
 //		String message = "welcome register , your verify code is "+ emailVerifyCode +" , please complete register in 5 minutes , thank you !";
 		
-		sendVerifyEmail(customerReq, request);
+		sendVerifyEmail(customerReq, request,Constant.PLEASE_EMAIL_VERIFY);
 		
 //		request.getSession().setAttribute(customerReq.getUsername(), emailVerifyCode);//it will be setted in redis in the future 
 //		
@@ -116,17 +121,19 @@ public class CustomerService {
 	}
 
 	public void sendVerifyEmail(CustomerReq customerReq,
-			HttpServletRequest request) throws Exception {
+			HttpServletRequest request,String emailTitle) throws Exception {
 		
 		String random = Math.random() + "";
 		
 		String message = "http://localhost:8880/crm-test/webpage/emailVerifyAutoLogin.html?username="+customerReq.getUsername()+"&token="+random;//It will be modified in the future
 		
 		
-		emailUtil.sendTemplateMail(customerReq.getEmail(), message);
+		emailUtil.sendTemplateMail(customerReq.getEmail(), message,emailTitle);
 		
 		String key = customerReq.getUsername() + Constant.FORGET_PASSWORD_KEY_SUFFIX;
 		
-		request.getSession().setAttribute(key, random);//it will be setted in redis in the future 
+//		request.getSession().setAttribute(key, random);//it will be setted in redis in the future 
+		
+		stringRedisTemplate.opsForValue().set(key, random, 180, TimeUnit.SECONDS);
 	}
 }

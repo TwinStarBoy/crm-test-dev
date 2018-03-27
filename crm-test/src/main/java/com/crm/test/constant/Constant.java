@@ -58,4 +58,6 @@ public class Constant {
 	public static final String FORGET_PASSWORD_KEY_SUFFIX = "_token";
 	
 	public static final String EMAIL_LOGIN_KEY_SUFFIX = "_token";
+	
+	public static final String PLEASE_EMAIL_VERIFY = "please click link and finish email verify";
 }

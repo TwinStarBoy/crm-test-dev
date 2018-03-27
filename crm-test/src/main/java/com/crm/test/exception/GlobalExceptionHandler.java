@@ -33,13 +33,15 @@ public class GlobalExceptionHandler {
         return ResponseUtil.setResult(Constant.BACKGROUND_SERVER_WRONG_CODE, Constant.BACKGROUND_SERVER_WRONG_DESC);
     }  
 	
-	
+	int i = 0;
 	@ExceptionHandler(value=NullPointerException.class) 
 	@ResponseBody
     public ResponseObject NullPiontExceptionHandler(HttpServletRequest request,  
             Exception exception) throws Exception  
     {  
         logger.error(exception.getMessage(), exception);
+        i++;
+        System.out.println(i);
         System.out.println("NullPiontExceptionHandler.............");        
         return ResponseUtil.setResult(Constant.BACKGROUND_SERVER_WRONG_CODE, Constant.BACKGROUND_SERVER_WRONG_DESC);
     } 

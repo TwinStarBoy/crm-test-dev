@@ -7,6 +7,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 public class CommonHandlerInterceptor extends HandlerInterceptorAdapter{
+	int i = 0;
 	@Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
@@ -19,6 +20,8 @@ public class CommonHandlerInterceptor extends HandlerInterceptorAdapter{
 //            response.setStatus(HttpStatus.OK.value());
 //            return false;
 //        }
+		i++;
+		System.out.println(i);
 		System.out.println("CommonHandlerInterceptor。preHandle，，，，，，，，，，，，，，，");
 		return true;
     }

@@ -2,12 +2,14 @@ package com.crm.test.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +38,9 @@ public class OnlineController {
 	
 	@Autowired
 	private CustomerService customerService;
+	
+	@Autowired
+	private StringRedisTemplate stringRedisTemplate;
 	
 	@RequestMapping(value = "/register" ,method = RequestMethod.POST)
 	@ResponseBody
@@ -91,7 +96,9 @@ public class OnlineController {
 		
 		String key = customerReq.getUsername() + Constant.EMAIL_LOGIN_KEY_SUFFIX;
 		
-		String tokenCache = (String) request.getSession().getAttribute(key);
+//		String tokenCache = (String) request.getSession().getAttribute(key);
+		
+		String tokenCache = stringRedisTemplate.opsForValue().get(key);
 		
 		if(StringUtil.isNull(token)){
 			return ResponseUtil.setResult(ReturnObject.EMAILTOKENISNULL.getReturnCode(), ReturnObject.EMAILTOKENISNULL.getReturnDesc());
@@ -112,9 +119,13 @@ public class OnlineController {
 			
 			customerService.updateCustomerEmailVerify(email);
 			
-			request.getSession().removeAttribute(key);// in case that repeat login
+//			request.getSession().removeAttribute(key);// in case that repeat login
+			
+			stringRedisTemplate.delete(key);
 
-			request.getSession().setAttribute("username", username);
+//			request.getSession().setAttribute("username", username);
+			
+			stringRedisTemplate.opsForValue().set("username", username);
 			
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -132,7 +143,7 @@ public class OnlineController {
 		try {
 			CustomerResp customerResp = customerService.selectCustomerByUserName(customerReq.getUsername()).get(0);
 			customerReq.setEmail(customerResp.getEmail());
-			customerService.sendVerifyEmail(customerReq, request);
+			customerService.sendVerifyEmail(customerReq, request,Constant.PLEASE_EMAIL_VERIFY);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -232,7 +243,9 @@ public class OnlineController {
 			ResponseUtil.setResult(Constant.EMAIL_VERIFY_FAILED_CODE, Constant.EMAIL_VERIFY_FAILED_DESC);
 		}
 		
-		String emailVerifyCodeCache = (String) request.getSession().getAttribute(emailParameter); // it will be gotten in the redis in future
+//		String emailVerifyCodeCache = (String) request.getSession().getAttribute(emailParameter); // it will be gotten in the redis in future
+		
+		String emailVerifyCodeCache = stringRedisTemplate.opsForValue().get(emailParameter);
 		
 		if(!emailVerifyCodeParameter.equals(emailVerifyCodeCache)){
 			
@@ -251,6 +264,7 @@ public class OnlineController {
 	@RequestMapping(value = "/login" ,method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseObject login(Customer customer,HttpServletRequest request){
+		
 		String username = customer.getUsername();
 		String password = customer.getPassword();
 		System.out.print(username);
@@ -269,7 +283,9 @@ public class OnlineController {
 		HttpSession session = request.getSession();
 		System.out.println(session.getAttribute("username"));
 		
-		session.setAttribute("username", username);
+//		session.setAttribute("username", username);
+		
+		stringRedisTemplate.opsForValue().set("username", username);
 		
 		return ResponseUtil.setResult(Constant.LOGIN_SUCCESS_CODE, Constant.LOGIN_SUCCESS_DESC,customers,customers.size());
 	}
@@ -277,11 +293,13 @@ public class OnlineController {
 	@RequestMapping(value = "/logout" ,method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseObject logout(HttpServletRequest request){
-		HttpSession session = request.getSession();
+//		HttpSession session = request.getSession();
+//		
+//		System.out.println(session.getAttribute("username"));
+//		
+//		session.removeAttribute("username");
 		
-		System.out.println(session.getAttribute("username"));
-		
-		session.removeAttribute("username");
+		stringRedisTemplate.delete("username");
 
 		return ResponseUtil.setResult(Constant.LOGOUT_SUCCESS_CODE, Constant.LOGOUT_SUCCESS_DESC);
 	}
@@ -314,13 +332,17 @@ public class OnlineController {
 		
 		message = "<a href=" + message +">" + message +"</a>";
 		
+		String emailTitle = "hello , you forget your password , please click link and reset your password";
+		
 		try {
 			
-			emailUtil.sendTemplateMail(email, message);
+			emailUtil.sendTemplateMail(email, message , emailTitle);
 			
 			String key = email + Constant.FORGET_PASSWORD_KEY_SUFFIX;
 			
-			session.setAttribute(key, random);
+//			session.setAttribute(key, random);
+			
+			stringRedisTemplate.opsForValue().set(key, random, 180, TimeUnit.SECONDS);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -353,7 +375,9 @@ public class OnlineController {
 		
 		HttpSession session = request.getSession();
 		
-		String tokenCache = (String) session.getAttribute(key);
+//		String tokenCache = (String) session.getAttribute(key);
+		
+		String tokenCache = stringRedisTemplate.opsForValue().get(key);
 		
 		//parameter token compares to cache token 
 		if(!token.equals(tokenCache)){
@@ -436,7 +460,7 @@ public class OnlineController {
 	public String sendEmail(HttpServletRequest request){
 		String acceptorAccount = request.getParameter("acceptorAccount");
 		try {
-			emailUtil.sendTemplateMail(acceptorAccount, "test email");
+			emailUtil.sendTemplateMail(acceptorAccount, "test email" , "email Title");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "send email fail !";

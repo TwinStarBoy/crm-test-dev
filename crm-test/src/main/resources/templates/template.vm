@@ -1,6 +1,6 @@
 <html>
 <body>
-    <h3>你好, 这是一封测试邮件</h3>
+    <h3>${emailTitle}</h3>
     ${emailContent}
 </body>
 </html>

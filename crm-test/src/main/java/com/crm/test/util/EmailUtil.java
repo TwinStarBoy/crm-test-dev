@@ -25,7 +25,7 @@ public class EmailUtil {
 	@Value("${spring.mail.username}")
 	private String sendMailAccount;
 	
-	public void sendTemplateMail(String acceptorAccount,String emailContent) throws Exception {
+	public void sendTemplateMail(String acceptorAccount,String emailContent,String emailTitle) throws Exception {
 
 		System.out.println(sendMailAccount);
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -37,6 +37,7 @@ public class EmailUtil {
 
 		Map<String, Object> model = new HashedMap();
 		model.put("emailContent", emailContent);
+		model.put("emailTitle", emailTitle);
 		String text = VelocityEngineUtils.mergeTemplateIntoString(
 				velocityEngine, "template.vm", "UTF-8", model);
 		helper.setText(text, true);
