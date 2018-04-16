@@ -60,4 +60,8 @@ public class Constant {
 	public static final String EMAIL_LOGIN_KEY_SUFFIX = "_token";
 	
 	public static final String PLEASE_EMAIL_VERIFY = "please click link and finish email verify";
+	
+	public static final String URL_PREFIX = "crm/";
+	
+	public static final String DO_MAIN_NAME = "http://localhost:8110/";
 }

@@ -93,6 +93,10 @@
 	update crm.customer set password = #{newPassword} where username = #{username}
 	</update>
 	
+	<update id="modifyPasswordByUsername">
+	update crm.customer set password = #{newPassword} where username = #{username}
+	</update>
+	
 	<select id="selectUsernameByEmail" resultType="com.crm.test.modelVo.CustomerResp">
 	select username from crm.customer where email = #{email}
 	</select>

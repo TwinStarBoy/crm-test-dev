@@ -21,7 +21,8 @@ public enum ReturnObject {
 	EMAIL_NOT_EXIST("00017","email does not exist"),
 	USERNAME_COULD_NOT_BE_EMPTY("00018","username could not be empty"),
 	USERNAME_DOES_NOT_EXIST("00019","username doesn't exist"),
-	MESSAGE_TYPE_WRONG("00020","message type is wrong");
+	MESSAGE_TYPE_WRONG("00020","message type is wrong"),
+	OLD_PASSWORD_WRONG("00021","old password is wrong");
 
 	private String returnCode;
 	private String returnDesc;

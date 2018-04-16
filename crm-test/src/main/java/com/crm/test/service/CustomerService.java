@@ -89,6 +89,10 @@ public class CustomerService {
 		return customerMapper.updatePasswordByUsername(customerReq);
 	}
 	
+	public int modifyPasswordByUsername(CustomerReq customerReq){
+		return customerMapper.modifyPasswordByUsername(customerReq);
+	}
+	
 	public int updatePasswordByEmail(Customer customer){
 		return customerMapper.updatePasswordByEmail(customer);
 	}
@@ -125,8 +129,11 @@ public class CustomerService {
 		
 		String random = Math.random() + "";
 		
-		String message = "http://localhost:8880/crm-test/webpage/emailVerifyAutoLogin.html?username="+customerReq.getUsername()+"&token="+random;//It will be modified in the future
+//		String message = "http://localhost:8880/crm-test/webpage/emailVerifyAutoLogin.html?username="+customerReq.getUsername()+"&token="+random;//It will be modified in the future
 		
+		String message = Constant.DO_MAIN_NAME + "emailVerifyAutoLogin.html?username="+customerReq.getUsername()+"&token="+random;//It will be modified in the future
+		
+		message = "<a href=" + message +">" + message +"</a>";
 		
 		emailUtil.sendTemplateMail(customerReq.getEmail(), message,emailTitle);
 		

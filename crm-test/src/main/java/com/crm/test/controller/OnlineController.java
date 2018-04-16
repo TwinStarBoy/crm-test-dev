@@ -261,7 +261,7 @@ public class OnlineController {
 		return ResponseUtil.setResult(Constant.EMAIL_VERIFY_SUCCESS_CODE, Constant.EMAIL_VERIFY_SUCCESS_DESC);
 	}
 	
-	@RequestMapping(value = "/login" ,method = RequestMethod.POST)
+	@RequestMapping(value = "/login" ,method = {RequestMethod.POST , RequestMethod.GET})
 	@ResponseBody
 	public ResponseObject login(Customer customer,HttpServletRequest request){
 		
@@ -328,7 +328,9 @@ public class OnlineController {
 		
 		String random = Math.random() + "";
 		
-		String message = "http://localhost:8880/crm-test/webpage/resetPassword.html?email="+email+"&token="+random;//It will be modified in the future
+//		String message = "http://localhost:8880/crm-test/webpage/resetPassword.html?email="+email+"&token="+random;//It will be modified in the future
+		
+		String message = Constant.DO_MAIN_NAME + "resetPassword.html?email="+email+"&token="+random;//It will be modified in the future
 		
 		message = "<a href=" + message +">" + message +"</a>";
 		

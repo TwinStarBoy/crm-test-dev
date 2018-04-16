@@ -4,6 +4,8 @@ import com.crm.test.model.Customer;
 
 public class CustomerReq extends Customer{
 	
+	private String oldPassword;
+	
 	private String newPassword;
 	
 	private String confirmPassword;
@@ -32,5 +34,13 @@ public class CustomerReq extends Customer{
 
 	public void setConfirmPassword(String confirmPassword) {
 		this.confirmPassword = confirmPassword;
+	}
+
+	public String getOldPassword() {
+		return oldPassword;
+	}
+
+	public void setOldPassword(String oldPassword) {
+		this.oldPassword = oldPassword;
 	}
 }

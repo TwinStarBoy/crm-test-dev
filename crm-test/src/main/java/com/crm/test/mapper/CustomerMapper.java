@@ -31,5 +31,7 @@ public interface CustomerMapper {
 	
 	public int updatePasswordByUsername(CustomerReq customerReq);
 	
+	public int modifyPasswordByUsername(CustomerReq customerReq);
+	
 	public List<CustomerResp> selectUsernameByEmail(CustomerReq customerReq);
 }

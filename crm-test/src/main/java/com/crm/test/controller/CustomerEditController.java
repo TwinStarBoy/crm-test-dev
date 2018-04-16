@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,10 +18,13 @@ import com.crm.test.modelVo.CustomerReq;
 import com.crm.test.service.CustomerService;
 import com.crm.test.util.ResponseObject;
 import com.crm.test.util.ResponseUtil;
+import com.crm.test.util.StringUtil;
 
 @Controller
 @RequestMapping(value = "/customerEdit")
 public class CustomerEditController {
+	private static Logger logger = Logger.getLogger(CustomerEditController.class);
+	
 	@Autowired
 	private CustomerService customerService;
 	
@@ -52,6 +56,57 @@ public class CustomerEditController {
 		List<Customer> lists = customerService.scanPersonalInformation(customer.getUsername());
 		
 		return ResponseUtil.setResult(Constant.SEARCH_SUCCESS_CODE, Constant.SEARCH_SUCCESS_DESC ,lists , lists.size());
+		
+	}
+	
+	@RequestMapping(value = "/modifyPassword" ,method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseObject modifyPassword(CustomerReq customerReq){
+		String oldPassword = customerReq.getOldPassword();
+		
+		if(StringUtil.isNull(oldPassword)){
+			return ResponseUtil.setResult(ReturnObject.NEWPASSWORDISNULL.getReturnCode(), ReturnObject.NEWPASSWORDISNULL.getReturnDesc());
+		}
+		
+		List<Customer> customers = null;
+		String username = customerReq.getUsername();
+		
+		try {
+			customers = customerService.selectCustomerByUserNameAndPassword(
+					username, oldPassword);
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			return ResponseUtil.setResult(ReturnObject.GENERAL_FAILED.getReturnCode(), ReturnObject.GENERAL_FAILED.getReturnDesc());
+		}
+		
+		if(null == customers || customers.size() == 0){
+			return ResponseUtil.setResult(ReturnObject.OLD_PASSWORD_WRONG.getReturnCode(), ReturnObject.OLD_PASSWORD_WRONG.getReturnDesc());
+		}
+		
+		String newPassword = customerReq.getNewPassword();
+		
+		if(StringUtil.isNull(newPassword)){
+			return ResponseUtil.setResult(ReturnObject.NEWPASSWORDISNULL.getReturnCode(), ReturnObject.NEWPASSWORDISNULL.getReturnDesc());
+		}
+		
+		String confirmPassword = customerReq.getConfirmPassword();
+		
+		if(StringUtil.isNull(confirmPassword)){
+			return ResponseUtil.setResult(ReturnObject.CONFIRMPASSWORDISNULL.getReturnCode(), ReturnObject.CONFIRMPASSWORDISNULL.getReturnDesc());
+		}
+		
+		if(!newPassword.equals(confirmPassword)){
+			return ResponseUtil.setResult(ReturnObject.NEWPASSWORD_NOT_EQUALS_CONFIRMPASSWORD.getReturnCode(), ReturnObject.NEWPASSWORD_NOT_EQUALS_CONFIRMPASSWORD.getReturnDesc());
+		}
+		try {
+			customerService.modifyPasswordByUsername(customerReq);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage(), e);
+			return ResponseUtil.setResult(Constant.BACKGROUND_SERVER_WRONG_CODE, Constant.BACKGROUND_SERVER_WRONG_DESC );
+		}
+		
+		return ResponseUtil.setResult(Constant.MODIFY_SUCCESS_CODE, Constant.MODIFY_SUCCESS_DESC );
 		
 	}
 }
