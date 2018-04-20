@@ -1,17 +1,21 @@
 package com.crm.test.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -23,6 +27,7 @@ import com.crm.test.modelVo.CustomerReq;
 import com.crm.test.modelVo.CustomerResp;
 import com.crm.test.service.CustomerService;
 import com.crm.test.util.EmailUtil;
+import com.crm.test.util.ImageVerifyCodeUtil;
 import com.crm.test.util.ResponseObject;
 import com.crm.test.util.ResponseUtil;
 import com.crm.test.util.StringUtil;
@@ -41,6 +46,38 @@ public class OnlineController {
 	
 	@Autowired
 	private StringRedisTemplate stringRedisTemplate;
+	
+	@RequestMapping(value = "/verifyCode" )
+	public void verifyCode(HttpServletRequest request,HttpServletResponse response){
+		
+		//String checkCode = "1234";
+
+		ImageVerifyCodeUtil draw = new ImageVerifyCodeUtil();
+		String codeStr = ImageVerifyCodeUtil.genCodeStr(4);
+		
+		String rnd = request.getParameter("rnd");
+		
+		stringRedisTemplate.opsForValue().set(rnd, codeStr, 120, TimeUnit.SECONDS);
+		
+		BufferedImage image = draw.drawImg(codeStr);
+
+		OutputStream os = null;
+		try {
+			os = response.getOutputStream();
+			ImageIO.write(image, "PNG", os);
+			image.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (os != null) {
+				try {
+					os.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 	
 	@RequestMapping(value = "/register" ,method = RequestMethod.POST)
 	@ResponseBody
