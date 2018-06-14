@@ -50,6 +50,12 @@ public class OnlineController {
 	@RequestMapping(value = "/verifyCode" )
 	public void verifyCode(HttpServletRequest request,HttpServletResponse response){
 		
+		response.setContentType("image/jpeg");
+	    // 禁止图像缓存。
+	    response.setHeader("Pragma", "no-cache");
+	    response.setHeader("Cache-Control", "no-cache");
+	    response.setDateHeader("Expires", 0);
+		
 		//String checkCode = "1234";
 
 		ImageVerifyCodeUtil draw = new ImageVerifyCodeUtil();

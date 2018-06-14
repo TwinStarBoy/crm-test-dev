@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.test.mapper.WalletMapper">
+	<update id="updateBalancePlus" parameterType="com.crm.test.model.Wallet">
+		update crm.cacc a set 
+			balance = balance + #{quantity} ,
+			freemargin = freemargin + #{quantity} , 
+			changebalan = changebalan + #{quantity} 
+		where 
+			a.PNSGID = #{pnsgid} and a.pnsid = #{pnsid} and a.cid = #{cid}
+	</update>
+	
+	<update id="updateBalanceMinus" parameterType="com.crm.test.model.Wallet">
+		update crm.cacc set 
+			balance = balance - #{quantity} ,
+			freemargin = freemargin - #{quantity} , 
+			changebalan = changebalan - #{quantity} 
+		where 
+			pnsgid = #{pnsgid} and pnsid = #{pnsid} and cid = #{cid}
+	</update>
+	
+	<select id="getCacc" parameterType="com.crm.test.model.Wallet" resultType="com.crm.test.model.Wallet">
+		select 
+			a.CID,a.CGID,a.PNSGID,a.PNSID,a.BALANCE,a.MARGIN,a.FREEMARGIN,a.PREBALAN,a.CHANGEBALAN,a.PNL
+		from 
+			crm.cacc a
+		where	
+			pnsgid = #{pnsgid} and pnsid = #{pnsid} and cid = #{cid} 
+		for update 	
+	</select>
+	
+	<insert id="saveCacc"  parameterType="com.crm.test.model.Wallet" >
+	    insert into crm.cacc (cid,cgid,pnsgid,pnsid) values (#{cid},#{cgid},#{pnsgid},#{pnsid})
+	</insert>
+	
+	<select id="countCacc"  parameterType="com.crm.test.model.Wallet" resultType="int">
+	    select 
+			count(*)
+		from 
+			crm.cacc a
+		where	
+			pnsgid = #{pnsgid} and pnsid = #{pnsid} and cid = #{cid} 
+	</select>
+</mapper>
